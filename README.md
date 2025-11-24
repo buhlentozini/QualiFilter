@@ -1,4 +1,4 @@
-# MultiQC QC Extractor
+# QualiFilter
 
 **Version:** 1.0.0
 
@@ -6,9 +6,11 @@
 
 ## Overview
 
-**MultiQC QC Extractor** is a command-line tool that extracts sequencing quality control (QC) metrics from a MultiQC tabular summary (.tabular) file and generates a consolidated QC matrix containing only the metrics of interest.  
+**QualiFilter** is a command-line tool that extracts sequencing quality control (QC) metrics from a MultiQC tabular summary (.tabular) file and generates a consolidated QC matrix containing only the metrics of interest.  
 
 The tool evaluates each sample against user-defined QC thresholds and assigns a **Pass/Fail** status automatically. It supports optional derived metrics and allows you to select which QC metrics to include in the output.
+
+It is designed to be simple, fast, and easy to integrate into downstream workflows (e.g.Galaxy or standalone use).
 
 ---
 
@@ -28,13 +30,20 @@ The tool evaluates each sample against user-defined QC thresholds and assigns a 
 ### Using pip
 
 ```bash
-pip install multiqc-qc-extractor
+pip install qualifilter
 ```
 
-### Using conda (Bioconda)
+### Using conda (Bioconda) - coming soon
 
 ```bash
-conda install -c bioconda multiqc-qc-extractor
+conda install -c bioconda qualifilter
+```
+---
+
+## Test installation
+
+```bash
+qualifilter --help
 ```
 
 ---
@@ -44,7 +53,7 @@ conda install -c bioconda multiqc-qc-extractor
 Basic example:
 
 ```bash
-multiqc-qc-extract \
+qualifilter \
     --input multiqc_data.tabular \
     --thresholds '{"Total_reads":1000000,"Coverage_gte_10x_pct":90,"Contam_pct":5}' \
     --outdir qc_results
@@ -78,6 +87,13 @@ multiqc-qc-extract \
 - **QC_status** – Pass/Fail based on thresholds  
 - **MTB_reads** – reads assigned to target organism (derived if `--derive_reads` is used)  
 - **Unclassified_reads** – unclassified reads (derived if `--derive_reads` is used)  
+
+Actual available columns depend on the input file.
+To inspect them:
+
+```bash
+qualifilter --input qc_matrix.tabular --list
+```
 
 ---
 
@@ -114,6 +130,26 @@ Both outputs include QC Pass/Fail status for each sample and any derived metrics
 - Derived metrics are calculated only if the `--derive_reads` option is enabled.  
 - Rounding precision defaults to **2 decimals** but can be customized.  
 - Logs are saved as `qc_tool.log` in the output directory.
+
+---
+
+## Development
+
+To work on QualiFilter locally:
+
+```bash
+# Clone the repository
+git clone https://github.com/buhlentozini/QualiFilter.git
+
+# Move into the project directory
+cd QualiFilter
+
+# Install in editable (development) mode
+pip install -e .
+
+# Run a quick local test
+qualifilter --input test-data/qc_matrix.tabular --outdir test-output
+```
 
 ---
 
