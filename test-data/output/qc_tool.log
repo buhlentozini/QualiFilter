@@ -1,0 +1,6 @@
+Total_reads appears to be in millions — scaling by 1e6
+Mapped_reads appears to be in millions — scaling by 1e6
+No specific columns selected — including all allowed columns.
+QC matrix saved successfully!
+TSV: test-data/output/QC_matrix_multiqc.tsv
+CSV: test-data/output/QC_matrix_multiqc.csv

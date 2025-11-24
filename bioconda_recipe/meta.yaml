@@ -1,0 +1,37 @@
+{% set name = "multiqc-qc-extractor" %}
+{% set version = "1.0.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/YOUR_USERNAME/multiqc-qc-extractor/archive/refs/tags/v{{ version }}.tar.gz
+  # sha256: UPDATE_AFTER_RELEASE
+
+build:
+  number: 0
+  noarch: python
+  script: "{{ PYTHON }} -m pip install . --no-deps -vv"
+
+requirements:
+  build:
+    - python
+    - pip
+  run:
+    - python >=3.8
+    - pandas
+
+test:
+  commands:
+    - multiqc-qc-extract --help
+
+about:
+  home: https://github.com/YOUR_USERNAME/multiqc-qc-extractor
+  license: MIT
+  license_file: LICENSE
+  summary: "Extract QC metrics from MultiQC summaries and generate QC matrices."
+
+extra:
+  recipe-maintainers:
+    - buhlentozini
