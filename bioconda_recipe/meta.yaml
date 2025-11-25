@@ -1,36 +1,36 @@
-{% set name = "multiqc-qc-extractor" %}
-{% set version = "1.0.0" %}
+{% set name = "qualifilter" %}
+{% set version = "1.0.0rc1" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  url: https://github.com/YOUR_USERNAME/multiqc-qc-extractor/archive/refs/tags/v{{ version }}.tar.gz
-  # sha256: UPDATE_AFTER_RELEASE
+  url: https://github.com/buhlentozini/QualiFilter/archive/refs/tags/v1.0.0-rc1.tar.gz
+  sha256: 97be06607bdc34830b984b95b6fdd285211b7c2dcd86f36cbd3f1e572bc80972
 
 build:
   number: 0
   noarch: python
-  script: "{{ PYTHON }} -m pip install . --no-deps -vv"
+  script: "{{ PYTHON }} -m pip install . -vv"
 
 requirements:
   build:
     - python
     - pip
   run:
-    - python >=3.8
+    - python
     - pandas
 
 test:
   commands:
-    - multiqc-qc-extract --help
+    - qualifilter --help
 
 about:
-  home: https://github.com/YOUR_USERNAME/multiqc-qc-extractor
+  home: https://github.com/buhlentozini/QualiFilter
   license: MIT
   license_file: LICENSE
-  summary: "Extract QC metrics from MultiQC summaries and generate QC matrices."
+  summary: "QC matrix extractor from MultiQC tabular reports"
 
 extra:
   recipe-maintainers:
