@@ -6,8 +6,8 @@ package:
   version: {{ version }}
 
 source:
-  url: https://github.com/buhlentozini/QualiFilter/archive/refs/tags/v1.0.0-rc1.tar.gz
-  sha256: 97be06607bdc34830b984b95b6fdd285211b7c2dcd86f36cbd3f1e572bc80972
+  url: https://github.com/buhlentozini/QualiFilter/archive/refs/tags/v1.0.0.tar.gz
+  sha256: eed3c91ffc0aba0427760d2c0b5129b3f24e043bbcde4ab667c7422554d14a47
 
 build:
   number: 0
