@@ -1,5 +1,5 @@
 {% set name = "qualifilter" %}
-{% set version = "1.0.0rc1" %}
+{% set version = "1.0.0" %}
 
 package:
   name: {{ name|lower }}
@@ -18,9 +18,11 @@ requirements:
   build:
     - python
     - pip
+
   run:
     - python
     - pandas
+    - pyyaml
 
 test:
   commands:
@@ -30,7 +32,7 @@ about:
   home: https://github.com/buhlentozini/QualiFilter
   license: MIT
   license_file: LICENSE
-  summary: "QC matrix extractor from MultiQC tabular reports"
+  summary: "Generate a QC report summarizing key quality metrics and sample pass/fail status according to user-defined thresholds."
 
 extra:
   recipe-maintainers:

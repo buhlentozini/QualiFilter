@@ -20,6 +20,7 @@ It is designed to be simple, fast, and easy to integrate into downstream workflo
 - Generates a summarized QC matrix in **TSV** and **CSV** formats.
 - Automatically evaluates samples against **user-defined thresholds**.
 - Computes derived read metrics (optional).
+- Allows configuration of included metrics and column renaming via a **config file** (YAML or JSON).
 - Logs processing steps and warnings for traceability.
 - Lists all available columns in the input file for inspection.
 
@@ -58,6 +59,15 @@ qualifilter \
     --thresholds '{"Total_reads":1000000,"Coverage_gte_10x_pct":90,"Contam_pct":5}' \
     --outdir qc_results
 ```
+To use a custom config file:
+
+```bash
+qualifilter \
+    --input multiqc_data.tabular \
+    --thresholds '{"Total_reads":1000000,"Coverage_gte_10x_pct":90,"Contam_pct":5}' \
+    --config config/custom_config.yaml \
+    --outdir qc_results
+```
 
 ### Command-line Options
 
@@ -66,6 +76,7 @@ qualifilter \
 | `--input` / `-i` | MultiQC tabular input file (TSV) |
 | `--attributes` / `-a` | Comma-separated list of QC metrics to include (optional). If empty, all metrics are included. |
 | `--thresholds` / `-t` | JSON string with QC thresholds. Example: `{"Total_reads":1000000,"Coverage_gte_10x_pct":90,"Contam_pct":5}` |
+| `--config` / `-c` | Path to YAML or JSON configuration file (optional). Overrides default allowed columns and rename map.By default, QualiFilter uses DEFAULT_ALLOWED_COLUMNS and DEFAULT_RENAME_MAP from qualifilter/config.py |
 | `--round` / `-r` | Number of decimals to round numeric columns (default: 2) |
 | `--derive_reads` | Calculate derived read metrics (optional) |
 | `--outdir` / `-o` | Output directory (default: current directory) |
@@ -150,6 +161,12 @@ pip install -e .
 # Run a quick local test
 qualifilter --input test-data/qc_matrix.tabular --outdir test-output
 ```
+
+---
+
+## Author
+
+Buhle Ntozini
 
 ---
 

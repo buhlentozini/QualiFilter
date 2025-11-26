@@ -6,6 +6,8 @@ import os
 import sys
 
 import pandas as pd
+import yaml
+from qualifilter.config import DEFAULT_ALLOWED_COLUMNS, DEFAULT_RENAME_MAP
 
 
 # Logging function #
@@ -19,7 +21,7 @@ def log(msg, log_file=None):
 # CLI parsing #
 def parse_args():
     parser = argparse.ArgumentParser(
-        description="Galaxy-safe QC matrix extractor"
+        description="QualiFilter: A tool that generates a QC report summarizing key quality metrics and sample pass/fail status according to user-defined thresholds"
     )
     parser.add_argument("--input", "-i", required=True, help="MultiQC tabular stats file (TSV)")
     parser.add_argument("--attributes", "-a", default="", help="Comma-separated list of columns/metrics to extract")
@@ -28,7 +30,26 @@ def parse_args():
     parser.add_argument("--derive_reads", action="store_true", help="Calculate derived read metrics from Kraken percentages")
     parser.add_argument("--outdir", "-o", default=".", help="Output directory")
     parser.add_argument("--list", action="store_true", help="List all available columns in the input file and exit")
+    parser.add_argument("--config", "-c", default=None, help="Path to YAML or JSON configuration file (optional). Overrides default allowed columns and rename map.")
     return parser.parse_args()
+
+
+# Config loader #
+def load_config(config_file):
+    if config_file is None:
+        return DEFAULT_ALLOWED_COLUMNS, DEFAULT_RENAME_MAP
+
+    with open(config_file, "r") as f:
+        if config_file.endswith(".json"):
+            cfg = json.load(f)
+        elif config_file.endswith((".yml", ".yaml")):
+            cfg = yaml.safe_load(f)
+        else:
+            raise ValueError("Config file must be .json, .yml or .yaml")
+
+    allowed = cfg.get("ALLOWED_COLUMNS", DEFAULT_ALLOWED_COLUMNS)
+    rename = cfg.get("RENAME_MAP", DEFAULT_RENAME_MAP)
+    return allowed, rename
 
 
 # QC decision function #
@@ -69,17 +90,10 @@ def main():
         print(f"ERROR: Cannot parse thresholds JSON: {e}", file=sys.stderr)
         sys.exit(1)
 
+    # Load config (default or user-supplied)
+    ALLOWED_COLUMNS, rename_map = load_config(args.config)
+
     # Rename MultiQC columns to Galaxy-safe names #
-    rename_map = {
-        "qualimap_bamqc-total_reads": "Total_reads",
-        "qualimap_bamqc-mapped_reads": "Mapped_reads",
-        "qualimap_bamqc-percentage_aligned": "Mapping_pct",
-        "qualimap_bamqc-median_coverage": "Median_depth",
-        "qualimap_bamqc-10_x_pc": "Coverage_gte_10x_pct",
-        "qualimap_bamqc-avg_gc": "GC_pct",
-        "kraken-pct_top_one": "Kraken_top1_pct",
-        "kraken-pct_unclassified": "Kraken_unclassified_pct"
-    }
     df.rename(columns=rename_map, inplace=True)
 
     # Calculate contamination automatically #
@@ -114,13 +128,6 @@ def main():
                 df[col_name] = df.get(metric, 0) >= thresh
 
     # Columns selection #
-    ALLOWED_COLUMNS = [
-        "Sample", "Total_reads", "Mapped_reads", "Mapping_pct", "Median_depth",
-        "Coverage_gte_10x_pct", "GC_pct", "Kraken_top1_pct", "Kraken_unclassified_pct",
-        "Contam_pct", "QC_status", "Total_reads_pass", "Coverage_gte_10x_pct_pass",
-        "Contam_pct_pass", "MTB_reads", "Unclassified_reads"
-    ]
-
     if args.attributes and args.attributes.lower() != "none":
         ATTRIBUTES_OF_INTEREST = [c.strip() for c in args.attributes.split(",") if c.strip()]
         missing = [c for c in ATTRIBUTES_OF_INTEREST if c not in df.columns]
@@ -138,8 +145,8 @@ def main():
     df[numeric_cols] = df[numeric_cols].round(args.round)
 
     # Save outputs #
-    tsv_out = os.path.join(args.outdir, "QC_matrix_multiqc.tsv")
-    csv_out = os.path.join(args.outdir, "QC_matrix_multiqc.csv")
+    tsv_out = os.path.join(args.outdir, "QC_matrix.tsv")
+    csv_out = os.path.join(args.outdir, "QC_matrix.csv")
     df.to_csv(tsv_out, sep="\t", index=False)
     df.to_csv(csv_out, sep=",", index=False, encoding="utf-8-sig")
     log("QC matrix saved successfully!", log_file)
