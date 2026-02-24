@@ -34,7 +34,7 @@ It is designed to be simple, fast, and easy to integrate into downstream workflo
 pip install qualifilter
 ```
 
-### Using conda (Bioconda) - coming soon
+### Using conda (Bioconda)
 
 ```bash
 conda install -c bioconda qualifilter
